@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Добавить пользователя</title>
+</head>
+<body>
+<h2>Добавить нового пользователя</h2>
+
+<form th:action="@{/admin/new}" th:object="${user}" method="post">
+    <label for="username">Имя:</label>
+    <input type="text" id="username" th:field="*{username}"  />
+    <p class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+
+    <br/>
+
+    <label for="country">Страна:</label>
+    <input type="text" id="country" th:field="*{country}"  />
+    <p class="error" th:if="${#fields.hasErrors('country')}" th:errors="*{country}"></p>
+    <br/>
+
+    <label for="email">Почта:</label>
+    <input type="text" id="email" th:field="*{email}"  />
+    <p class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+    <br/>
+
+    <label>Выберите роль:</label>
+    <div>
+        <input type="checkbox" id="roleUser" name="roles" value="1">
+        <label for="roleUser">Пользователь</label>
+    </div>
+    <div>
+        <input type="checkbox" id="roleAdmin" name="roles" value="2">
+        <label for="roleAdmin">Администратор</label>
+    </div>
+    <p class="error" th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}"></p>
+    <br/>
+
+    <label for="password">Пароль:</label>
+    <input type="password" id="password" th:field="*{password}"  />
+    <p class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+    <br/>
+
+    <button type="submit">Сохранить</button>
+</form>
+<a th:href="@{/logout}">Сменить пользователя</a>
+</body>
+</html>

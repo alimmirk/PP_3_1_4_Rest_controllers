@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Management</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+        .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); }
+        .modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; width: 50%; }
+    </style>
+</head>
+<body>
+<h1>User Management</h1>
+
+<button onclick="openCreateModal()">Create User</button>
+
+<table id="usersTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Roles</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<!-- Модальное окно создания/редактирования -->
+<div id="userModal" class="modal">
+    <div class="modal-content">
+        <h2 id="modalTitle">Create User</h2>
+        <form id="userForm">
+            <input type="hidden" id="userId">
+            <div>
+                <label>Username:</label>
+                <input type="text" id="username" required>
+            </div>
+            <div>
+                <label>Password:</label>
+                <input type="password" id="password">
+            </div>
+            <div>
+                <label>Email:</label>
+                <input type="email" id="email" required>
+            </div>
+            <div>
+                <label>Country:</label>
+                <input type="text" id="country">
+            </div>
+            <div id="rolesContainer"></div>
+            <button type="submit">Save</button>
+            <button type="button" onclick="closeModal()">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<script src="/js/main.js"></script>
+</body>
+</html>
