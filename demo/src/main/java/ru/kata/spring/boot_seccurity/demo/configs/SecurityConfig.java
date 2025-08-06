@@ -2,6 +2,7 @@ package ru.kata.spring.boot_seccurity.demo.configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,6 +19,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.PUT, "/api/user/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()

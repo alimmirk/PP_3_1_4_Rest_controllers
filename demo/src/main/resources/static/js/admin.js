@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentUserSpan = document.getElementById('currentUser');
     const userRolesSpan = document.getElementById('userRoles');
     const logoutBtn = document.getElementById('logoutBtn');
+    const adminTabBtn = document.getElementById('adminTabBtn');
+    const userTabBtn = document.getElementById('userTabBtn');
 
     // Modals
     const editUserModal = new bootstrap.Modal(document.getElementById('editUserModal'));
@@ -32,8 +34,20 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('saveUserBtn').addEventListener('click', handleEditUser);
     document.getElementById('confirmDeleteBtn').addEventListener('click', handleDeleteUser);
     logoutBtn.addEventListener('click', handleLogout);
-    document.getElementById('adminTabBtn').addEventListener('click', () => window.location.href = '/admin');
-    document.getElementById('userTabBtn').addEventListener('click', () => window.location.href = '/user');
+
+    // Измененные обработчики для кнопок вкладок
+    adminTabBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Показываем вкладку управления пользователями
+        const tab = new bootstrap.Tab(document.getElementById('users-tab'));
+        tab.show();
+    });
+
+    userTabBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Загружаем данные текущего пользователя
+        loadCurrentUserDataForView();
+    });
 
     // Functions
     async function loadCurrentUser() {
@@ -54,6 +68,66 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    async function loadCurrentUserDataForView() {
+        try {
+            const response = await fetch('/api/user', {
+                headers: { 'Authorization': AUTH_HEADER }
+            });
+
+            if (!response.ok) throw new Error('Failed to load user data');
+
+            const userData = await response.json();
+            // Можно открыть модальное окно с данными пользователя
+            showUserDataModal(userData);
+        } catch (error) {
+            console.error('Error loading user data:', error);
+            alert('Error loading user data: ' + error.message);
+        }
+    }
+
+    function showUserDataModal(user) {
+        // Создаем или находим модальное окно для показа данных пользователя
+        let userModal = document.getElementById('userDataModal');
+
+        if (!userModal) {
+            // Создаем модальное окно, если его нет
+            userModal = document.createElement('div');
+            userModal.className = 'modal fade';
+            userModal.id = 'userDataModal';
+            userModal.innerHTML = `
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">User Profile</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Username:</strong> <span id="modalUsername"></span></p>
+                            <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+                            <p><strong>Country:</strong> <span id="modalCountry"></span></p>
+                            <p><strong>Roles:</strong> <span id="modalRoles"></span></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(userModal);
+        }
+
+        // Заполняем данные
+        document.getElementById('modalUsername').textContent = user.username;
+        document.getElementById('modalEmail').textContent = user.email;
+        document.getElementById('modalCountry').textContent = user.country || '-';
+        document.getElementById('modalRoles').textContent = user.roles.map(r => r.name.replace('ROLE_', '')).join(', ');
+
+        // Показываем модальное окно
+        const modal = new bootstrap.Modal(userModal);
+        modal.show();
+    }
+
+    // Остальные функции остаются без изменений
     async function loadAllUsers() {
         try {
             const response = await fetch(API_URL, {

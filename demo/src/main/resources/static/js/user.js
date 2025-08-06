@@ -16,13 +16,16 @@ document.addEventListener('DOMContentLoaded', function() {
     async function loadUserData() {
         try {
             const response = await fetch(API_URL, {
+                credentials: 'include', // Для работы с сессией
                 headers: {
-                    'Authorization': 'Basic ' + btoa('user:user123') // Замените на реальные данные
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
                 }
             });
 
             if (!response.ok) {
-                throw new Error('Failed to load user data');
+                const error = await response.text();
+                throw new Error(error || 'Failed to load user data');
             }
 
             currentUser = await response.json();
@@ -30,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Error:', error);
             alert('Error loading user data: ' + error.message);
+            window.location.href = '/login';
         }
     }
 
@@ -62,29 +66,33 @@ document.addEventListener('DOMContentLoaded', function() {
         editModal.show();
     });
 
-    // Сохранение изменений профиля
+    // Сохранение изменений профиля (исправленный обработчик)
     saveProfileBtn.addEventListener('click', async () => {
+        const userId = document.getElementById('userId').value;
         const updatedData = {
             username: document.getElementById('username').value,
             email: document.getElementById('email').value,
             country: document.getElementById('country').value,
-            password: document.getElementById('password').value || undefined
+            password: document.getElementById('password').value || null
         };
 
         try {
-            const response = await fetch(API_URL, {
+            const response = await fetch(`${API_URL}/${userId}`, {
                 method: 'PUT',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Basic ' + btoa('user:user123') // Замените на реальные данные
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify(updatedData)
             });
 
             if (!response.ok) {
-                throw new Error('Failed to update profile');
+                const error = await response.json();
+                throw new Error(error.message || 'Failed to update profile');
             }
 
+            const result = await response.json();
             editModal.hide();
             await loadUserData();
             alert('Profile updated successfully!');
@@ -98,10 +106,11 @@ document.addEventListener('DOMContentLoaded', function() {
     logoutBtn.addEventListener('click', () => {
         fetch('/logout', {
             method: 'POST',
-            headers: {
-                'Authorization': 'Basic ' + btoa('user:user123') // Замените на реальные данные
-            }
+            credentials: 'include'
         }).then(() => {
+            window.location.href = '/login';
+        }).catch(error => {
+            console.error('Logout error:', error);
             window.location.href = '/login';
         });
     });
