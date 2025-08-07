@@ -14,9 +14,7 @@
       background-color: #343a40;
       color: white;
     }
-    .edit-btn {
-      margin-top: 20px;
-    }
+    /* Удален стиль .edit-btn так как кнопки больше нет */
   </style>
 </head>
 <body>
@@ -52,44 +50,7 @@
           </tbody>
         </table>
       </div>
-      <button id="editProfileBtn" class="btn btn-primary edit-btn">Edit Profile</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal для редактирования -->
-<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Edit Profile</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="profileForm">
-          <input type="hidden" id="userId">
-          <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" required>
-          </div>
-          <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" required>
-          </div>
-          <div class="mb-3">
-            <label for="country" class="form-label">Country</label>
-            <input type="text" class="form-control" id="country">
-          </div>
-          <div class="mb-3">
-            <label for="password" class="form-label">New Password (leave blank to keep current)</label>
-            <input type="password" class="form-control" id="password">
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" id="saveProfileBtn" class="btn btn-primary">Save changes</button>
-      </div>
+      <!-- Кнопка Edit Profile удалена, но контейнер оставлен -->
     </div>
   </div>
 </div>
