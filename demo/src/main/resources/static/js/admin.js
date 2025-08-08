@@ -35,17 +35,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('confirmDeleteBtn').addEventListener('click', handleDeleteUser);
     logoutBtn.addEventListener('click', handleLogout);
 
-    // Измененные обработчики для кнопок вкладок
     adminTabBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        // Показываем вкладку управления пользователями
         const tab = new bootstrap.Tab(document.getElementById('users-tab'));
         tab.show();
     });
 
     userTabBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        // Загружаем данные текущего пользователя
         loadCurrentUserDataForView();
     });
 
@@ -63,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
             userRolesSpan.textContent = currentAdmin.roles.map(r => r.name.replace('ROLE_', '')).join(', ');
         } catch (error) {
             console.error('Error loading current user:', error);
-            alert('Error loading user data. Please login again.');
             window.location.href = '/login';
         }
     }
@@ -77,20 +73,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) throw new Error('Failed to load user data');
 
             const userData = await response.json();
-            // Можно открыть модальное окно с данными пользователя
             showUserDataModal(userData);
         } catch (error) {
             console.error('Error loading user data:', error);
-            alert('Error loading user data: ' + error.message);
         }
     }
 
     function showUserDataModal(user) {
-        // Создаем или находим модальное окно для показа данных пользователя
         let userModal = document.getElementById('userDataModal');
 
         if (!userModal) {
-            // Создаем модальное окно, если его нет
             userModal = document.createElement('div');
             userModal.className = 'modal fade';
             userModal.id = 'userDataModal';
@@ -116,18 +108,15 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.appendChild(userModal);
         }
 
-        // Заполняем данные
         document.getElementById('modalUsername').textContent = user.username;
         document.getElementById('modalEmail').textContent = user.email;
         document.getElementById('modalCountry').textContent = user.country || '-';
         document.getElementById('modalRoles').textContent = user.roles.map(r => r.name.replace('ROLE_', '')).join(', ');
 
-        // Показываем модальное окно
         const modal = new bootstrap.Modal(userModal);
         modal.show();
     }
 
-    // Остальные функции остаются без изменений
     async function loadAllUsers() {
         try {
             const response = await fetch(API_URL, {
@@ -140,7 +129,6 @@ document.addEventListener('DOMContentLoaded', function() {
             renderUsersTable(allUsers);
         } catch (error) {
             console.error('Error loading users:', error);
-            alert('Error loading users: ' + error.message);
         }
     }
 
@@ -157,7 +145,6 @@ document.addEventListener('DOMContentLoaded', function() {
             renderRolesCheckboxes(editRolesCheckboxes);
         } catch (error) {
             console.error('Error loading roles:', error);
-            alert('Error loading roles: ' + error.message);
         }
     }
 
@@ -182,7 +169,6 @@ document.addEventListener('DOMContentLoaded', function() {
             usersTableBody.appendChild(row);
         });
 
-        // Add event listeners to buttons
         document.querySelectorAll('.edit-btn').forEach(btn => {
             btn.addEventListener('click', () => openEditModal(btn.dataset.userId));
         });
@@ -226,7 +212,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('editCountry').value = user.country || '';
         document.getElementById('editPassword').value = '';
 
-        // Check the roles the user has
         const checkboxes = editRolesCheckboxes.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(checkbox => {
             checkbox.checked = user.roles.some(r => r.id == checkbox.value);
@@ -270,16 +255,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(error || 'Failed to add user');
             }
 
-            alert('User added successfully!');
             addUserForm.reset();
             await loadAllUsers();
 
-            // Switch to users tab
             const tab = new bootstrap.Tab(document.getElementById('users-tab'));
             tab.show();
         } catch (error) {
             console.error('Error adding user:', error);
-            alert('Error adding user: ' + error.message);
         }
     }
 
@@ -308,12 +290,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(error || 'Failed to update user');
             }
 
-            alert('User updated successfully!');
             editUserModal.hide();
             await loadAllUsers();
         } catch (error) {
             console.error('Error updating user:', error);
-            alert('Error updating user: ' + error.message);
         }
     }
 
@@ -330,12 +310,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('Failed to delete user');
             }
 
-            alert('User deleted successfully!');
             deleteUserModal.hide();
             await loadAllUsers();
         } catch (error) {
             console.error('Error deleting user:', error);
-            alert('Error deleting user: ' + error.message);
         }
     }
 
