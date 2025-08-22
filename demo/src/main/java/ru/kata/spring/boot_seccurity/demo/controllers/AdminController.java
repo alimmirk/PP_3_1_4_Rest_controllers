@@ -14,6 +14,8 @@ import ru.kata.spring.boot_seccurity.demo.service.RoleService;
 import ru.kata.spring.boot_seccurity.demo.service.UserService;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -53,28 +55,85 @@ public class AdminController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createUser(@RequestBody @Valid User user,
-                                             @RequestParam(required = false) List<Long> roleIds,
-                                             BindingResult bindingResult,
-                                             @AuthenticationPrincipal UserDetails userDetails) {
-        checkAdminRole(userDetails);
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body("Validation error");
+    public ResponseEntity<String> createUser(@RequestBody Map<String, Object> requestBody,
+                                             @AuthenticationPrincipal UserDetails userDetails,
+                                             BindingResult bindingResult) {
+
+        try {
+            System.out.println("Received POST request body: " + requestBody);
+
+            checkAdminRole(userDetails);
+
+            // Создаем User объект из данных запроса
+            User user = new User();
+            user.setUsername((String) requestBody.get("username"));
+            user.setEmail((String) requestBody.get("email"));
+            user.setCountry((String) requestBody.get("country"));
+            user.setPassword((String) requestBody.get("password"));
+
+            // Извлекаем roleIds
+            List<Long> roleIds = null;
+            Object roleIdsObj = requestBody.get("roleIds");
+            if (roleIdsObj instanceof List) {
+                // Преобразуем List<Object> в List<Long>
+                roleIds = ((List<?>) roleIdsObj).stream()
+                        .filter(item -> item instanceof Integer || item instanceof Long)
+                        .map(item -> ((Number) item).longValue())
+                        .collect(Collectors.toList());
+            }
+
+            System.out.println("Extracted roleIds for create: " + roleIds);
+            System.out.println("Extracted user for create: " + user);
+
+            // Валидация
+            if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Username is required");
+            }
+            if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Password is required");
+            }
+
+            userService.saveUser(user, roleIds);
+            return ResponseEntity.ok("User created successfully");
+
+        } catch (Exception e) {
+            System.err.println("Error creating user: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error creating user: " + e.getMessage());
         }
-        userService.saveUser(user, roleIds);
-        return ResponseEntity.ok("User created successfully");
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateUser(@PathVariable Long id,
-                                             @RequestBody @Valid User user,
-                                             @RequestParam(required = false) List<Long> roleIds,
-                                             BindingResult bindingResult,
-                                             @AuthenticationPrincipal UserDetails userDetails) {
+                                             @RequestBody Map<String, Object> requestBody,
+                                             @AuthenticationPrincipal UserDetails userDetails,
+                                             BindingResult bindingResult) {
+
+        System.out.println("Received request body: " + requestBody);
+
         checkAdminRole(userDetails);
+
+        // Создаем User объект из данных запроса
+        User user = new User();
+        user.setUsername((String) requestBody.get("username"));
+        user.setEmail((String) requestBody.get("email"));
+        user.setCountry((String) requestBody.get("country"));
+        user.setPassword((String) requestBody.get("password"));
+
+        // Извлекаем roleIds
+        List<Long> roleIds = null;
+        Object roleIdsObj = requestBody.get("roleIds");
+        if (roleIdsObj instanceof List) {
+            roleIds = (List<Long>) roleIdsObj;
+        }
+
+        System.out.println("Extracted roleIds: " + roleIds);
+        System.out.println("Extracted user: " + user);
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body("Validation error");
         }
+
         userService.updateUser(id, user, roleIds);
         return ResponseEntity.ok("User updated successfully");
     }

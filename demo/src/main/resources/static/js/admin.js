@@ -267,6 +267,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function handleEditUser() {
         const userId = document.getElementById('editUserId').value;
+        console.log('Выбранные пользователи:', userId);
         const formData = {
             username: document.getElementById('editUsername').value,
             email: document.getElementById('editEmail').value,
@@ -274,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
             password: document.getElementById('editPassword').value || undefined,
             roleIds: getSelectedRoleIds(editRolesCheckboxes)
         };
-
+        console.log('Отправляемые данные:', formData);
         try {
             const response = await fetch(`${API_URL}/${userId}`, {
                 method: 'PUT',
